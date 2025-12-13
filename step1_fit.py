@@ -16,8 +16,8 @@ def get_pool(n_fit,n_cores):
 
 if __name__ == '__main__':
     ## STEP 0: GET PARALLEL POOL
-    n_fits = 40
-    n_cores = 8
+    n_fits = 80
+    n_cores = 80
     mp.freeze_support()
     pool = get_pool(n_fits,n_cores)
 
@@ -25,7 +25,7 @@ if __name__ == '__main__':
 
     cfg = datap.load_config()
     dir = cfg["data_dir"]
-    agent_name = ['Model1','Model6']
+    agent_name = ['Model1','Model2','Model3','Model4','Model5','Model6']
 
     stage_files = {
         "pre": f"{dir}/1vrl_pre_alldata.pkl",

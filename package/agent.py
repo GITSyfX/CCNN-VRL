@@ -111,7 +111,249 @@ class Model1():
         
         self.RPE = r - self.Q[a]
         # Q-update
-        self.Q[a] = self.Q[a]+self.alpha*self.RPE
+        self.Q[a] = self.Q[a] + self.alpha*self.RPE
+
+
+class Model2():
+    name = 'Model 2'
+    bnds = [(0,1), (0,5), (-5,5)]
+    pbnds = [(.1,.5), (.1,2), (-3,3)]
+    p_name = ['alpha', 'beta', 'kappa_stim']
+    n_params = len(p_name)
+    
+    p_trans = [
+        lambda x: 0.0 + (1 - 0.0) * sigmoid(x),
+        lambda x: 0.0 + (5 - 0.0) * sigmoid(x),
+        lambda x: -5.0 + (10 - 0.0) * sigmoid(x)
+    ]
+    
+    p_links = [
+        lambda y: logit(np.clip((y - 0.0) / (1 - 0.0), eps_, 1 - eps_)),
+        lambda y: logit(np.clip((y - 0.0) / (5 - 0.0), eps_, 1 - eps_)),
+        lambda y: logit(np.clip((y + 5.0) / (10 - 0.0), eps_, 1 - eps_))
+    ]
+    
+    def __init__(self, params):
+        self._init_mem()
+        self._init_critic()
+        self._load_params(params)
+
+    def _init_mem(self):
+        self.mem = simpleBuffer()
+    def _load_params(self, params):
+        params = [fn(p) for p, fn in zip(params, self.p_trans)]
+        self.alpha = params[0]
+        self.beta = params[1]
+        self.kappa_stim = params[2]
+    def _init_critic(self):
+        self.Q = np.array([0.5, 0.5])  # [Q_circle, Q_square]
+    
+    # ----------- decision ----------- #
+    def policy(self):
+        return softmax(self.beta*self.Q)
+    def eval_act(self, a):
+        '''Evaluate the probability of given state and action
+        '''
+        prob  = softmax(self.beta*self.Q)
+        return prob[a]
+    
+    # ----------- learning ----------- #
+    def learn(self):
+        prev_shape, a, r = self.mem.sample('prev_shape', 'a', 'r')
+        
+        # Add stimulus stickiness (shape-based)
+        if not np.isnan(prev_shape):
+            prev_shape = int(prev_shape)
+            self.Q[prev_shape] += self.kappa_stim
+        
+        self.RPE = r - self.Q[a]
+        # 更新Q值
+        self.Q[a] = self.Q[a] + self.alpha * self.RPE
+
+
+class Model3():
+    name = 'Model 3'
+    bnds = [(0,1), (0,1), (0,5)]
+    pbnds = [(.1,.5), (.1,.5), (.1,2)]
+    p_name = ['alpha_rew', 'alpha_nonrew', 'beta']
+    n_params = len(p_name)
+    
+    p_trans = [
+        lambda x: 0.0 + (1 - 0.0) * sigmoid(x),
+        lambda x: 0.0 + (1 - 0.0) * sigmoid(x),
+        lambda x: 0.0 + (5 - 0.0) * sigmoid(x),
+    ]
+    
+    p_links = [
+        lambda y: logit(np.clip((y - 0.0) / (1 - 0.0), eps_, 1 - eps_)),
+        lambda y: logit(np.clip((y - 0.0) / (1 - 0.0), eps_, 1 - eps_)),
+        lambda y: logit(np.clip((y - 0.0) / (5 - 0.0), eps_, 1 - eps_)),
+    ]
+    
+    def __init__(self, params):
+        self._init_mem()
+        self._init_critic()
+        self._load_params(params)
+
+    def _init_mem(self):
+        self.mem = simpleBuffer()
+    def _load_params(self, params):
+        params = [fn(p) for p, fn in zip(params, self.p_trans)]
+        self.alpha_rew = params[0]
+        self.alpha_nonrew = params[1]
+        self.beta = params[2]
+    def _init_critic(self):
+        self.Q = np.array([0.5, 0.5])  # [Q_circle, Q_square]
+    
+    # ----------- decision ----------- #
+    def policy(self):
+        return softmax(self.beta*self.Q)
+    def eval_act(self, a):
+        '''Evaluate the probability of given state and action
+        '''
+        prob  = softmax(self.beta*self.Q)
+        return prob[a]
+    
+    # ----------- learning ----------- #
+    def learn(self):
+        a, r = self.mem.sample('a', 'r')
+    
+
+        # 选择学习率
+        alpha = self.alpha_rew if r > 0 else self.alpha_nonrew
+        
+        self.RPE = r - self.Q[a]
+        # 更新Q值
+        self.Q[a] = self.Q[a] + alpha * self.RPE
+
+
+class Model4():
+    name = 'Model 4'
+    bnds = [(0,1), (0,1), (0,5), (-5,5)]
+    pbnds = [(.1,.5), (.1,.5), (.1,2), (-3,3)]
+    p_name = ['alpha_rew', 'alpha_nonrew', 'beta', 'kappa_stim']
+    n_params = len(p_name)
+    
+    p_trans = [
+        lambda x: 0.0 + (1 - 0.0) * sigmoid(x),
+        lambda x: 0.0 + (1 - 0.0) * sigmoid(x),
+        lambda x: 0.0 + (5 - 0.0) * sigmoid(x),
+        lambda x: -5.0 + (10 - 0.0) * sigmoid(x)
+    ]
+    
+    p_links = [
+        lambda y: logit(np.clip((y - 0.0) / (1 - 0.0), eps_, 1 - eps_)),
+        lambda y: logit(np.clip((y - 0.0) / (1 - 0.0), eps_, 1 - eps_)),
+        lambda y: logit(np.clip((y - 0.0) / (5 - 0.0), eps_, 1 - eps_)),
+        lambda y: logit(np.clip((y + 5.0) / (10 - 0.0), eps_, 1 - eps_))
+    ]
+    
+    def __init__(self, params):
+        self._init_mem()
+        self._init_critic()
+        self._load_params(params)
+
+    def _init_mem(self):
+        self.mem = simpleBuffer()
+    def _load_params(self, params):
+        params = [fn(p) for p, fn in zip(params, self.p_trans)]
+        self.alpha_rew = params[0]
+        self.alpha_nonrew = params[1]
+        self.beta = params[2]
+        self.kappa_stim = params[3]
+    def _init_critic(self):
+        self.Q = np.array([0.5, 0.5])  # [Q_circle, Q_square]
+    
+    # ----------- decision ----------- #
+    def policy(self):
+        return softmax(self.beta*self.Q)
+    def eval_act(self, a):
+        '''Evaluate the probability of given state and action
+        '''
+        prob  = softmax(self.beta*self.Q)
+        return prob[a]
+    
+    # ----------- learning ----------- #
+    def learn(self):
+        prev_shape, a, r = self.mem.sample('prev_shape', 'a', 'r')
+        
+        # Add stimulus stickiness (shape-based)
+        if not np.isnan(prev_shape):
+            prev_shape = int(prev_shape)
+            self.Q[prev_shape] += self.kappa_stim
+
+        # 选择学习率
+        alpha = self.alpha_rew if r > 0 else self.alpha_nonrew
+        
+        self.RPE = r - self.Q[a]
+        # 更新Q值
+        self.Q[a] = self.Q[a] + alpha * self.RPE
+
+
+class Model5():
+    name = 'Model 5'
+    bnds = [(0,1), (0,1), (0,5), (-5,5)]
+    pbnds = [(.1,.5), (.1,.5), (.1,2), (-3,3)]
+    p_name = ['alpha_rew', 'alpha_nonrew', 'beta', 'kappa_side']
+    n_params = len(p_name)
+    
+    p_trans = [
+        lambda x: 0.0 + (1 - 0.0) * sigmoid(x),
+        lambda x: 0.0 + (1 - 0.0) * sigmoid(x),
+        lambda x: 0.0 + (5 - 0.0) * sigmoid(x),
+        lambda x: -5.0 + (10 - 0.0) * sigmoid(x)
+    ]
+    
+    p_links = [
+        lambda y: logit(np.clip((y - 0.0) / (1 - 0.0), eps_, 1 - eps_)),
+        lambda y: logit(np.clip((y - 0.0) / (1 - 0.0), eps_, 1 - eps_)),
+        lambda y: logit(np.clip((y - 0.0) / (5 - 0.0), eps_, 1 - eps_)),
+        lambda y: logit(np.clip((y + 5.0) / (10 - 0.0), eps_, 1 - eps_))
+    ]
+    
+    def __init__(self, params):
+        self._init_mem()
+        self._init_critic()
+        self._load_params(params)
+
+    def _init_mem(self):
+        self.mem = simpleBuffer()
+    def _load_params(self, params):
+        params = [fn(p) for p, fn in zip(params, self.p_trans)]
+        self.alpha_rew = params[0]
+        self.alpha_nonrew = params[1]
+        self.beta = params[2]
+        self.kappa_side = params[3]
+    def _init_critic(self):
+        self.Q = np.array([0.5, 0.5])  # [Q_circle, Q_square]
+    
+    # ----------- decision ----------- #
+    def policy(self):
+        return softmax(self.beta*self.Q)
+    def eval_act(self, a):
+        '''Evaluate the probability of given state and action
+        '''
+        prob  = softmax(self.beta*self.Q)
+        return prob[a]
+    
+    # ----------- learning ----------- #
+    def learn(self):
+        prev_side, circle_side, a, r = self.mem.sample('prev_side', 'circle_side', 'a', 'r')
+        
+        # Map shape Q-values to spatial Q-values based on current configuration
+        if not np.isnan(prev_side):
+            prev_side = int(prev_side)
+            if circle_side == 1: #circle on left
+                self.Q[prev_side] += self.kappa_side  # [Q_left=circle, Q_right=square]
+            else:
+                self.Q[1-prev_side] += self.kappa_side  # [Q_left=square, Q_right=circle]
+
+        # 选择学习率
+        alpha = self.alpha_rew if r > 0 else self.alpha_nonrew
+        
+        self.RPE = r - self.Q[a]
+        # 更新Q值
+        self.Q[a] = self.Q[a] + alpha * self.RPE
 
 
 class Model6():
@@ -132,7 +374,7 @@ class Model6():
     p_links = [
         lambda y: logit(np.clip((y - 0.0) / (1 - 0.0), eps_, 1 - eps_)),
         lambda y: logit(np.clip((y - 0.0) / (1 - 0.0), eps_, 1 - eps_)),
-        lambda y: logit(np.clip((y - 0.0) / (20 - 0.0), eps_, 1 - eps_)),
+        lambda y: logit(np.clip((y - 0.0) / (5 - 0.0), eps_, 1 - eps_)),
         lambda y: logit(np.clip((y + 5.0) / (10 - 0.0), eps_, 1 - eps_)),
         lambda y: logit(np.clip((y + 5.0) / (10 - 0.0), eps_, 1 - eps_))
     ]
