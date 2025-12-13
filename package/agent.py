@@ -29,15 +29,15 @@ class simpleBuffer:
 
 class RA():   
     name = 'Random Agent'
-    bnds=[(0,1),(0,20)] 
-    pbnds= [(.1,.9),(.1,10)]  
+    bnds=[(0,1),(0,5)] 
+    pbnds= [(.1,.5),(.1,2)]  
     p_name   = ['alpha', 'beta']
     n_params = len(bnds) 
 
     p_trans = [lambda x: 0.0 + (1 - 0.0) * sigmoid(x),   
-               lambda x: 0.0 + (20 - 0.0) * sigmoid(x)]  
+               lambda x: 0.0 + (5 - 0.0) * sigmoid(x)]  
     p_links = [lambda y: logit(np.clip((y - 0.0) / (1 - 0.0), eps_, 1 - eps_)),  
-               lambda y: logit(np.clip((y - 0.0) / (20 - 0.0), eps_, 1 - eps_))]
+               lambda y: logit(np.clip((y - 0.0) / (5 - 0.0), eps_, 1 - eps_))]
 
     def __init__(self,params):
         self._init_mem()
@@ -70,15 +70,15 @@ class RA():
 
 class Model1():
     name = 'Model 1'
-    bnds = [(0,1),(0,20)] #边界
-    pbnds = [(.1,.9),(.1,10)] #采样边界
+    bnds = [(0,1),(0,5)] #边界
+    pbnds = [(.1,.5),(.1,2)] #采样边界
     p_name   = ['alpha', 'beta']  #参数名
     n_params = len(p_name) 
 
     p_trans = [lambda x: 0.0 + (1 - 0.0) * sigmoid(x),   
-               lambda x: 0.0 + (20 - 0.0) * sigmoid(x)]  
+               lambda x: 0.0 + (5 - 0.0) * sigmoid(x)]  
     p_links = [lambda y: logit(np.clip((y - 0.0) / (1 - 0.0), eps_, 1 - eps_)),  
-               lambda y: logit(np.clip((y - 0.0) / (20 - 0.0), eps_, 1 - eps_))] 
+               lambda y: logit(np.clip((y - 0.0) / (5 - 0.0), eps_, 1 - eps_))] 
     
     def __init__(self,params):
         self._init_mem()
@@ -116,15 +116,15 @@ class Model1():
 
 class Model6():
     name = 'Model 6'
-    bnds = [(0,1), (0,1), (0,20), (-5,5), (-5,5)]
-    pbnds = [(.1,.9), (.1,.9), (.1,10), (-3,3), (-3,3)]
+    bnds = [(0,1), (0,1), (0,5), (-5,5), (-5,5)]
+    pbnds = [(.1,.5), (.1,.5), (.1,2), (-3,3), (-3,3)]
     p_name = ['alpha_rew', 'alpha_nonrew', 'beta', 'kappa_stim', 'kappa_side']
     n_params = len(p_name)
     
     p_trans = [
         lambda x: 0.0 + (1 - 0.0) * sigmoid(x),
         lambda x: 0.0 + (1 - 0.0) * sigmoid(x),
-        lambda x: 0.0 + (20 - 0.0) * sigmoid(x),
+        lambda x: 0.0 + (5 - 0.0) * sigmoid(x),
         lambda x: -5.0 + (10 - 0.0) * sigmoid(x),
         lambda x: -5.0 + (10 - 0.0) * sigmoid(x)
     ]
@@ -174,7 +174,7 @@ class Model6():
         
         # Map shape Q-values to spatial Q-values based on current configuration
         if not np.isnan(prev_side):
-            prev_side = int(prev_shape)
+            prev_side = int(prev_side)
             if circle_side == 1: #circle on left
                 self.Q[prev_side] += self.kappa_side  # [Q_left=circle, Q_right=square]
             else:

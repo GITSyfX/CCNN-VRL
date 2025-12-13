@@ -25,7 +25,7 @@ if __name__ == '__main__':
 
     cfg = datap.load_config()
     dir = cfg["data_dir"]
-    agent_name = ['Model6','Model1']
+    agent_name = ['Model1','Model6']
 
     stage_files = {
         "pre": f"{dir}/1vrl_pre_alldata.pkl",
