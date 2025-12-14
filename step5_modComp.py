@@ -155,12 +155,12 @@ if __name__ == '__main__':
     # STEP 1: LOAD DATA 
     cfg = datap.load_config()
     dir = cfg["data_dir"]
-    agent_name = ['Model1','Model2','Model3','Model4','Model5','Model6'] #'MB'
-    agent_markers = ['o','^','v','s','+','D']
+    agent_name = ['Model1','Model2','Model3','Model4','Model5','Model6','Model7'] #'MB'
+    agent_markers = ['o','^','v','s','+','D','>']
     
     Allagent_fitdata = {}
 
-    stage = 'post'
+    stage = 'follow-up'
     # STEP 2: PARAMS COMPARITION
     for name in agent_name:
         task_agent = getattr(agent,name)

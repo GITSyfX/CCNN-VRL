@@ -454,3 +454,53 @@ class Model6():
         RPE = r - self.Q[a]
         # 更新Q值
         self.Q[a] += alpha * RPE
+
+
+class Model7():
+    name = 'Model 7'
+    bnds = [(0,1),(0,5),(0.2)] #边界
+    pbnds = [(.1,.5),(.1,2),(0.5,1.5)] #采样边界
+    p_name   = ['alpha', 'beta', 'gamma']  #参数名
+    n_params = len(p_name) 
+
+    p_trans = [lambda x: 0.0 + (1 - 0.0) * sigmoid(x),   
+               lambda x: 0.0 + (5 - 0.0) * sigmoid(x),
+               lambda x: 0.0 + (2 - 0.0) * sigmoid(x)]  
+    p_links = [lambda y: logit(np.clip((y - 0.0) / (1 - 0.0), eps_, 1 - eps_)),  
+                lambda y: logit(np.clip((y - 0.0) / (5 - 0.0), eps_, 1 - eps_)),
+                lambda y: logit(np.clip((y - 0.0) / (2 - 0.0), eps_, 1 - eps_))] 
+    
+    def __init__(self,params):
+        self._init_mem()
+        self._init_critic()
+        self._load_params(params)
+
+    def _init_mem(self):
+        self.mem = simpleBuffer()
+    def _load_params(self, params):
+        params = [fn(p) for p, fn in zip(params, self.p_trans)]
+        self.alpha = params[0] # learning rate 
+        self.beta  = params[1]# inverse temperature 
+        self.gamma  = params[2] 
+    def _init_critic(self):
+        self.Q = np.array([0.5, 0.5]) 
+
+    # ----------- decision ----------- #
+    def policy(self):
+        return softmax(self.beta*self.Q)
+
+    def eval_act(self,a):
+        '''Evaluate the probability of given state and action
+        '''
+        prob  = softmax(self.beta*self.Q)
+        return prob[a]
+    
+        # ----------- learning ----------- #
+    def learn(self):
+        a, r = self.mem.sample(
+                        'a','r')
+        
+        r = np.sign(r) * (np.abs(r) ** self.gamma)
+        self.RPE = r - self.Q[a]
+        # Q-update
+        self.Q[a] = self.Q[a] + self.alpha*self.RPE
