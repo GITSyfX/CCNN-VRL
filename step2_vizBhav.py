@@ -67,7 +67,7 @@ def violin(ax, data, x, y, order = None, palette = None, orient='v',
                             hue=hue, hue_order=hue_order,
                             orient=orient, palette=palette, 
                             alpha=.1, inner=None, density_norm='width',
-                            legend=False, clip_on=False,
+                            legend=False, clip_on=True,
                             ax=ax)
         plt.setp(v.collections, alpha=.35, edgecolor='none')
         sns.stripplot(data=data, 
@@ -146,7 +146,7 @@ if __name__ == '__main__':
     cfg = datap.load_config()
     dir = cfg["data_dir"]
     trldata_name = 'alldata_trlbytrl.csv'
-    summarydata_name = 'alldata_summary.csv'
+    summarydata_name = 'allfitdata_summary.csv'
     stage_map = {1: 'pre', 2: 'post', 3: 'follow-up'}
     group_map = {0: 'sham', 1: 'intervention'}
     
@@ -179,15 +179,15 @@ if __name__ == '__main__':
 
 
     ## STEP 2: PLOT DATA BY VIOLIN
-    # x = 'Stage label'
-    # y = 'Hit rate'
-    # fig, ax = plt.subplots(figsize=(6, 3), dpi=150, constrained_layout=True)
-    # violin(ax, summarydata, x=x, y=y, order=['pre','post','follow-up'],
-    #        hue='Group label', palette=group_color)
-    # plt.ylim([0, 1])
-    # plt.yticks([0, 0.5, 1])
-    # basic_format(ax, '', y, legend='off', ratio=0.8)
-    # fig.savefig(f'Truebehav_{x}_{y}.jpg', dpi=300)
+    x = 'Stage label'
+    y = 'alpha'
+    fig, ax = plt.subplots(figsize=(6, 3), dpi=150, constrained_layout=True)
+    violin(ax, summarydata, x=x, y=y, order=['pre','post','follow-up'],
+           hue='Group label', palette=group_color)
+    plt.ylim([0, 1])
+    plt.yticks([0, 0.5, 1])
+    basic_format(ax, '', y, legend='off', ratio=0.8)
+    fig.savefig(f'Truebehav_{x}_{y}.jpg', dpi=300)
 
     # y = 'Hit rate diff'
     # fig, ax = plt.subplots(figsize=(6, 3), dpi=150, constrained_layout=True)
@@ -199,7 +199,7 @@ if __name__ == '__main__':
     # fig.savefig(f'Truebehav_{x}_{y}.jpg', dpi=300)
 
     # STEP 3: PLOT DATA TRIAL BY TRIAL
-    stage = 'follow-up'
+    # stage = 'follow-up'
     # x = 'Trials'
     # y = 'Choose choice1 prob'
     # stagedata = trlbytrldata[trlbytrldata['Stage label'] == stage]
@@ -218,23 +218,23 @@ if __name__ == '__main__':
     # basic_format(ax, x, y, legend='on')
     # fig.savefig(f'Truebehav_{x}_{y}_{stage}.SVG', dpi=300)
 
-    choice1_prop = choice1_prop[choice1_prop['Stage label'] == stage]
-    x = 'Trials'
-    y = 'Choose choice1 proportion'
-    fig, ax = plt.subplots(figsize=(6, 3), dpi=150, constrained_layout=True)
-    ax.plot(ref, linestyle="--", linewidth=2, color='black', alpha=0.5)
-    ax.text(0.25, 0.5, "stable", transform=ax.transAxes, zorder=0,
-            color='black', alpha=0.5, ha='center', va='center', fontsize=14)
-    ax.text(0.75, 0.5, "volatile", transform=ax.transAxes, zorder=0,
-            color='black', alpha=0.5, ha='center', va='center', fontsize=14)
-    viz_curve(ax, choice1_prop, x=x, y=y, smooth='True',
-            hue='Group label', palette=group_color)
-    ax.set_xlim([1,180])
-    ax.set_xticks([1, 45, 90, 135, 180])
-    ax.set_ylim([0.1, 0.9])
-    ax.set_yticks([0.1, 0.5, 0.9])
-    basic_format(ax, x, y, legend='off')
-    fig.savefig(f'Truebehav_{x}_{y}_{stage}.SVG', dpi=300)
+    # choice1_prop = choice1_prop[choice1_prop['Stage label'] == stage]
+    # x = 'Trials'
+    # y = 'Choose choice1 proportion'
+    # fig, ax = plt.subplots(figsize=(6, 3), dpi=150, constrained_layout=True)
+    # ax.plot(ref, linestyle="--", linewidth=2, color='black', alpha=0.5)
+    # ax.text(0.25, 0.5, "stable", transform=ax.transAxes, zorder=0,
+    #         color='black', alpha=0.5, ha='center', va='center', fontsize=14)
+    # ax.text(0.75, 0.5, "volatile", transform=ax.transAxes, zorder=0,
+    #         color='black', alpha=0.5, ha='center', va='center', fontsize=14)
+    # viz_curve(ax, choice1_prop, x=x, y=y, smooth='True',
+    #         hue='Group label', palette=group_color)
+    # ax.set_xlim([1,180])
+    # ax.set_xticks([1, 45, 90, 135, 180])
+    # ax.set_ylim([0.1, 0.9])
+    # ax.set_yticks([0.1, 0.5, 0.9])
+    # basic_format(ax, x, y, legend='off')
+    # fig.savefig(f'Truebehav_{x}_{y}_{stage}.SVG', dpi=300)
     plt.show()
 
 

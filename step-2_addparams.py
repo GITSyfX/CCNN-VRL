@@ -4,14 +4,14 @@ from package import agent,datap
 
 cfg = datap.load_config()
 dir = cfg["data_dir"]
-agent_name = ['Model 1'] 
-params_name = ['alpha','beta']
-stages = ['pre','post']
+agent_name = ['Model1'] 
+params_name = ['alpha', 'beta']
+stages = ['pre','post','follow-up']
 
-datafile = f'{dir}/alldata_summary.xlsx' 
-savefile = f'{dir}/allfitdata_summary.xlsx' 
+datafile = f'{dir}/alldata_summary.csv' 
+savefile = f'{dir}/allfitdata_summary.csv' 
 
-df = pd.read_excel(datafile)
+df = pd.read_csv(datafile)
 print(f"读取Excel文件，共 {len(df)} 行数据")
 
 # 读取pkl文件
@@ -28,13 +28,13 @@ for i,stage in enumerate(stages):
                         subjnum = row['subj_id']
                         
                         # 在df中找到对应的行（匹配Subjnum和Stage）
-                        mask = (df['Subjnum'] == subjnum) & (df['Stage'] == stage)
+                        mask = (df['Subjnum'] == int(subjnum)) & (df['Stage label'] == stage)
                         
                         if mask.sum() == 0:
-                                print(f"  警告: 未找到 Subjnum={subjnum}, Stage={stage} 的数据")
+                                print(f"  警告: 未找到 Subjnum={subjnum}, Stage label'={stage} 的数据")
                                 continue
                         elif mask.sum() > 1:
-                                print(f"  警告: 找到多行 Subjnum={subjnum}, Stage={stage} 的数据")
+                                print(f"  警告: 找到多行 Subjnum={subjnum}, Stage label'={stage} 的数据")
                         
                         # 更新参数值
                         for param_name in params_name:
@@ -45,5 +45,5 @@ for i,stage in enumerate(stages):
 # ========== 提取参数并添加到DataFrame ==========
 
 # ========== 保存结果 ==========
-df.to_excel(savefile, index=False)
+df.to_csv(savefile, index=False)
 print(f"结果已保存到 {savefile}")

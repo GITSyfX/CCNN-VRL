@@ -30,7 +30,7 @@ if __name__ == '__main__':
     stage_files = {
         "pre": f"{dir}/1vrl_pre_alldata.pkl",
         "post": f"{dir}/2vrl_post_alldata.pkl",
-        "15days": f"{dir}/3vrl_15days_alldata.pkl"
+        "follow-up": f"{dir}/3vrl_follow-up_alldata.pkl"
     }
 
     ## STEP 2: SETTING 
