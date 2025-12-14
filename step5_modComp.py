@@ -106,6 +106,7 @@ def viz_sortviolin(agent_name,all_fitdata):
         else:    
             critics_means = crs_table.groupby('agent')[critics].mean()
             sorted_models = critics_means.sort_values(ascending=True).index.tolist()
+            print(sorted_models)
             violin(data=crs_table, x=critics, y='agent', 
                 order=sorted_models, orient='h',color=(161/255,169/255,208/255),palette=None,
                 mean_marker_size=8, scatter_size=2,
@@ -154,29 +155,18 @@ if __name__ == '__main__':
     # STEP 1: LOAD DATA 
     cfg = datap.load_config()
     dir = cfg["data_dir"]
-    agent_name = ['MDT','MB','MF'] #'MB'
-    agent_markers = ['o','^','v']
+    agent_name = ['Model1','Model2','Model3','Model4','Model5','Model6','RA'] #'MB'
+    agent_markers = ['o','^','v','s','+','D']
     
-    Groups_all_fitdata = {}
-    MUD_all_fitdata = {}
-    HC_all_fitdata = {}  
+    Allagent_fitdata = {}
 
+    stage = '15days'
     # STEP 2: PARAMS COMPARITION
     for name in agent_name:
         task_agent = getattr(agent,name)
-        with open(f'{dir}/fitdata/fitresults_{name}_MUD.pkl', 'rb') as f: 
-                MUD_fitdata = pickle.load(f)
-        with open(f'{dir}/fitdata/fitresults_{name}_HC.pkl', 'rb') as f: 
-                HC_fitdata = pickle.load(f)
-        Groups_fitdata = HC_fitdata | MUD_fitdata
+        with open(f'{dir}/fitdata/fitresults_{name}_{stage}.pkl', 'rb') as f: 
+                All_fitdata = pickle.load(f)
         
-        Groups_all_fitdata[name] = Groups_fitdata
-        MUD_all_fitdata[name] = MUD_fitdata
-        HC_all_fitdata[name] = HC_fitdata
+        Allagent_fitdata[name] = All_fitdata
 
-    #viz_sortviolin(agent_name,Groups_all_fitdata)
-    #viz_sortviolin(agent_name,MUD_all_fitdata)
-    #viz_sortviolin(agent_name,HC_all_fitdata)
-    viz_sortcurve(agent_name, Groups_all_fitdata, agent_markers, crs='BIC')
-    viz_sortcurve(agent_name, MUD_all_fitdata, agent_markers, crs='BIC')
-    viz_sortcurve(agent_name, HC_all_fitdata, agent_markers, crs='BIC')
+    viz_sortviolin(agent_name, Allagent_fitdata)
