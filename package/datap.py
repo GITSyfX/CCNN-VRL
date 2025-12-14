@@ -114,13 +114,7 @@ def load_data(agent,fit_alldata,sim_alldata = []):
 
     rows = []
     for subj_id, results in fit_alldata.items():
-        if 'Q' in subj_id:
-            group = 'MUD'
-        else:
-            group = 'HC'
-
         row = {
-            'group': group,
             'subj_id': subj_id,
             'log_post': results['log_post'],
             'negloglike': results['negloglike'],
