@@ -117,6 +117,7 @@ def nll(params, agent, data):
         subj = agent(params)
         nLL = 0
         ## loop to simulate the responses in the block 
+        data = data.iloc[:90]
         for _, row in data.iterrows():
             # see state 
             prev_shape = row['prev_shape']

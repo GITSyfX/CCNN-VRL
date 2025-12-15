@@ -33,6 +33,7 @@ if __name__ == '__main__':
         "follow-up": f"{dir}/3vrl_follow-up_alldata.pkl"
     }
 
+    block = '90'
     ## STEP 2: SETTING 
     seed = 2025
     rng = np.random.RandomState(seed)
@@ -45,7 +46,7 @@ if __name__ == '__main__':
             all_results = fit.fl(pool,task_agent,agent_data,n_fits)
 
 
-            output_path = f"{dir}/fitdata/fitresults_{name}_{stage}.pkl"
+            output_path = f"{dir}/fitdata/fitresults_{name}_{stage}_{block}.pkl"
             with open(output_path, 'xb') as f:
                 pickle.dump(all_results, f)
 

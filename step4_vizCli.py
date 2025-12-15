@@ -164,7 +164,7 @@ if __name__ == '__main__':
     ## STEP 1: LOAD OR SAVE DATA    
     cfg = datap.load_config()
     dir = cfg["data_dir"]
-    data_name = 'allfitdata_summary.csv'
+    data_name = 'alldata_summary.csv'
     
     volatile_prob = [0.2, 0.8, 0.2, 0.8]
     last10_prob = 0.2
@@ -192,7 +192,7 @@ if __name__ == '__main__':
 
     ## STEP 2: PLOT DATA BY VIOLIN
     x = 'Stage label'
-    y = 'alpha'
+    y = 'Risk taking rate 90'
     # fig, ax = plt.subplots(figsize=(6, 3), dpi=150)
     # violin(ax, summarydata, x=x, y=y, order=['pre','post','follow-up'],
     #     hue='Group label', palette=group_color)
@@ -205,36 +205,36 @@ if __name__ == '__main__':
     fig, axs = plt.subplots(1, 2, figsize=(7, 3), dpi=150)
     violin(axs[0], summarydata_intervention, x=x, y=y,
         order=['pre','post','follow-up'], palette=[group_color[0]]*3)
-    axs[0].set_ylim([0, 1])
-    axs[0].set_yticks([0, 0.5, 1])
-    axs[0].set_position([0.1, 0.2, 0.35, 0.6])
+    # axs[0].set_ylim([0, 2])
+    # axs[0].set_yticks([0, 1, 2])
+    # axs[0].set_position([0.1, 0.2, 0.35, 0.6])
     basic_format(axs[0], '', y, legend='off', multiplots = True, ratio=0.8)
 
     violin(axs[1], summarydata_sham, x=x, y=y,
         order=['pre','post','follow-up'], palette=[group_color[1]]*3)
-    axs[1].set_ylim([0, 1])
-    axs[1].set_yticks([0, 0.5, 1])
-    axs[1].set_position([0.55, 0.2, 0.35, 0.6])
+    # axs[1].set_ylim([0, 2])
+    # axs[1].set_yticks([0, 1, 2])
+    # axs[1].set_position([0.55, 0.2, 0.35, 0.6])
     basic_format(axs[1], '', y, legend='on', multiplots = True, ratio=0.8)
     fig.savefig(f'Truecli_{x}_{y}_bygroup.SVG', dpi=300)
     
 
     # STEP 3: PLOT DATA OF CORRELATION
-    x = 'beta'
-    y = 'Optimal choice rate'
+    x = 'Visual crave'
+    y = 'Risk taking rate'
     summarydata_diff =  summarydata_pre
     summarydata_diff[f'{x} diff'] = summarydata_post[x] - summarydata_pre[x]
     summarydata_diff[f'{y} diff'] = summarydata_post[y] - summarydata_pre[y]
 
-    summarydata_diff = summarydata_diff[summarydata_diff['Group label'] == 'intervention']
+    summarydata_diff = summarydata_diff[summarydata_diff['Group label'] == 'sham']
 
     fig, ax = plt.subplots(figsize=(6, 3), dpi=150)
     viz_corr(ax, summarydata_diff, x=f'{x} diff', y=f'{y} diff', color=group_color[0])
     basic_format(ax, f'{x} diff', f'{y} diff', legend='on', ratio=0.9)
-    ax.set_xlim([-0.1, 1])
-    ax.set_xticks([-1, 0, 1])
-    ax.set_ylim([-20, 20])
-    ax.set_yticks([-20, 0, 20])
+    # ax.set_xlim([-1, 1])
+    # ax.set_xticks([-1, 0, 1])
+    # ax.set_ylim([-0.2, 0.2])
+    # ax.set_yticks([-0.2, 0, 0.2])
     plt.grid(False)
     fig.savefig(f'Truecli_{x}diff_{y}diff_post-pre.SVG', dpi=300)
     plt.show()

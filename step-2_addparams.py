@@ -4,8 +4,8 @@ from package import agent,datap
 
 cfg = datap.load_config()
 dir = cfg["data_dir"]
-agent_name = ['Model1'] 
-params_name = ['alpha', 'beta']
+agent_name = ['Model7'] 
+params_name = ['alpha', 'beta','gamma']
 stages = ['pre','post','follow-up']
 
 datafile = f'{dir}/alldata_summary.csv' 
