@@ -17,7 +17,7 @@ def get_pool(n_fit,n_cores):
 if __name__ == '__main__':
     ## STEP 0: GET PARALLEL POOL
     n_fits = 80
-    n_cores = 80
+    n_cores = 40
     mp.freeze_support()
     pool = get_pool(n_fits,n_cores)
 
@@ -25,7 +25,7 @@ if __name__ == '__main__':
 
     cfg = datap.load_config()
     dir = cfg["data_dir"]
-    agent_name = ['Model7'] #'Model6','Model5','Model4','Model3','Model2','Model1','RA'
+    agent_name = ['Model7','Model6','Model5','Model4','Model3','Model2','Model1'] #'Model6','Model5','Model4','Model3','Model2','Model1','RA'
 
     stage_files = {
         "pre": f"{dir}/1vrl_pre_alldata.pkl",
@@ -33,7 +33,7 @@ if __name__ == '__main__':
         "follow-up": f"{dir}/3vrl_follow-up_alldata.pkl"
     }
 
-    block = '90'
+    block = 'volatile'
     ## STEP 2: SETTING 
     seed = 2025
     rng = np.random.RandomState(seed)
