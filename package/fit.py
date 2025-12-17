@@ -117,7 +117,7 @@ def nll(params, agent, data):
         subj = agent(params)
         nLL = 0
         ## loop to simulate the responses in the block 
-        data = data.iloc[-90:]
+        #data = data.iloc[-90:]
         for _, row in data.iterrows():
             # see state 
             prev_shape = row['prev_shape']
@@ -129,7 +129,7 @@ def nll(params, agent, data):
             if not np.isnan(a):
                 a = int(a)
             else:
-                a = random.choice([0, 1])
+                continue
             r = row['reward']
             #save the info 
             subj.mem.push({
@@ -140,8 +140,18 @@ def nll(params, agent, data):
                 'r': r,
             })
             po1 = subj.eval_act(a)+1e-16
-            subj.learn()
+
+                    # ===== 2. 异常检测 =====
+
+            if (po1 <= 0) or (po1 > 1) or np.isnan(po1):
+                print(f"[BAD PROB], p={po1}, a={a}")
+            
+            if po1 < 1e-4:  # 极端惩罚来源
+                print(f"[LOW P], p={po1:.2e}, a={a}")
+
+
             nLL -= np.log(po1)
+            subj.learn()
         return nLL 
 
 
