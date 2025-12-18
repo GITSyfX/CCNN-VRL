@@ -629,3 +629,71 @@ class Model9():
         self.RPE = r - self.Q[a]
         # Q-update
         self.Q[a] = self.Q[a] + self.alpha*self.RPE
+
+
+class Model10():
+    name = 'Model 10'
+    bnds = [(0,1),(0,1e4),(0,1e4),(0,1),(-20,20)] #边界
+    pbnds = [(.1,.5),(.1,5),(.1,5),(0.3,0.7),(-5,5)] #采样边界
+    p_name   = ['alpha','beta1','beta2','omiga','kappa_stim']  #参数名
+    n_params = len(p_name) 
+
+    p_trans = [lambda x: 0.0 + (1 - 0.0) * sigmoid(x),   
+               lambda x: 0.0 + (1e4 - 0.0) * sigmoid(x),
+               lambda x: 0.0 + (1e4 - 0.0) * sigmoid(x),
+               lambda x: 0.0 + (1 - 0.0) * sigmoid(x),
+               lambda x: -20.0 + (40 - 0.0) * sigmoid(x)]  
+    p_links = [lambda y: logit(np.clip((y - 0.0) / (1 - 0.0), eps_, 1 - eps_)),  
+                lambda y: logit(np.clip((y - 0.0) / (1e4 - 0.0), eps_, 1 - eps_)),
+                lambda y: logit(np.clip((y - 0.0) / (1e4 - 0.0), eps_, 1 - eps_)),
+                lambda y: logit(np.clip((y - 0.0) / (1 - 0.0), eps_, 1 - eps_)),
+                lambda y: logit(np.clip((y + 20.0) / (40 - 0.0), eps_, 1 - eps_))] 
+    
+    def __init__(self,params):
+        self._init_mem()
+        self._init_critic()
+        self._load_params(params)
+
+    def _init_mem(self):
+        self.mem = simpleBuffer()
+    def _load_params(self, params):
+        params = [fn(p) for p, fn in zip(params, self.p_trans)]
+        self.alpha = params[0] # learning rate 
+        self.beta1  = params[1]# inverse temperature 
+        self.beta2  = params[2]# inverse temperature 
+        self.omiga  = params[3]
+        self.kappa_stim = params[4]
+    def _init_critic(self):
+        self.Q = np.array([0.5, 0.5]) 
+
+    # ----------- decision ----------- #
+    def policy(self):
+        Q_sum = self.Q.copy()
+
+        prev_shape, circle_point, square_point = self.mem.sample(
+            'prev_shape','circle_point','square_point')
+        
+        # stimulus stickiness (previously chosen stimulus)
+        if prev_shape is not None and not np.isnan(prev_shape):
+            Q_sum[int(prev_shape)] += self.kappa_stim
+
+        V_sum = np.array([circle_point, square_point])
+
+        logits1 = self.beta1 * Q_sum
+        logits2 = self.beta2 * V_sum
+        return self.omiga*softmax(logits1) + (1-self.omiga)*softmax(logits2)
+
+    def eval_act(self,a):
+        '''Evaluate the probability of given state and action
+        '''
+        prob = self.policy()
+        return prob[a]
+    
+        # ----------- learning ----------- #
+    def learn(self):
+        a, r = self.mem.sample(
+                        'a','r')
+        
+        self.RPE = r - self.Q[a]
+        # Q-update
+        self.Q[a] = self.Q[a] + self.alpha*self.RPE

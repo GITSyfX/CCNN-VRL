@@ -4,8 +4,8 @@ from package import agent,datap
 
 cfg = datap.load_config()
 dir = cfg["data_dir"]
-agent_name = ['Model7'] 
-params_name = ['alpha','beta','gamma']
+agent_name = ['Model9'] 
+params_name = ['alpha','beta','omiga','kappa_stim']
 stages = ['pre','post','follow-up']
 
 datafile = f'{dir}/alldata_summary.csv' 
@@ -21,7 +21,7 @@ print(f"读取Excel文件，共 {len(df)} 行数据")
 for i,stage in enumerate(stages):
         for i,name in enumerate(agent_name):
                 task_agent = getattr(agent,name)
-                with open(f'{dir}/fitdata/fitresults_{name}_{stage}_{block}.pkl', 'rb') as f: 
+                with open(f'{dir}/fitdata/fitresults_{name}_{stage}.pkl', 'rb') as f: 
                         All_fitdata = pickle.load(f)
 
                 All_fitdata = datap.load_data(task_agent,All_fitdata)
