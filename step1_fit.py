@@ -25,7 +25,8 @@ if __name__ == '__main__':
 
     cfg = datap.load_config()
     dir = cfg["data_dir"]
-    agent_name = ['Model7','Model6','Model5','Model4','Model3','Model2','Model1'] #'Model6','Model5','Model4','Model3','Model2','Model1','RA'
+    agent_name = ['Model1','Model2','Model3','Model4','Model5','Model6',
+                  'Model7','Model8','Model9','RA'] #'Model6','Model5','Model4','Model3','Model2','Model1','RA'
 
     stage_files = {
         "pre": f"{dir}/1vrl_pre_alldata.pkl",
@@ -46,7 +47,7 @@ if __name__ == '__main__':
             all_results = fit.fl(pool,task_agent,agent_data,n_fits)
 
 
-            output_path = f"{dir}/fitdata/fitresults_{name}_{stage}_{block}.pkl"
+            output_path = f"{dir}/fitdata/fitresults_{name}_{stage}.pkl" #注意同时修改nll中的dat
             with open(output_path, 'xb') as f:
                 pickle.dump(all_results, f)
 

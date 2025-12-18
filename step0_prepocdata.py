@@ -8,7 +8,7 @@ if __name__ == "__main__":
 
     cfg = datap.load_config()
     dir = cfg["data_dir"]
-    stages = ['pre','post','15days']
+    stages = ['pre','post','follow-up']
     for i,stage in enumerate(stages):
         
 

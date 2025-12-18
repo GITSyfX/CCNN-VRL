@@ -29,15 +29,15 @@ class simpleBuffer:
 
 class RA():   
     name = 'Random Agent'
-    bnds=[(0,1),(0,5)] 
-    pbnds= [(.1,.5),(.1,2)]  
+    bnds=[(0,1),(0,1e4)] 
+    pbnds= [(.1,.5),(.1,5)]  
     p_name   = ['alpha', 'beta']
     n_params = len(bnds) 
 
     p_trans = [lambda x: 0.0 + (1 - 0.0) * sigmoid(x),   
-               lambda x: 0.0 + (5 - 0.0) * sigmoid(x)]  
+               lambda x: 0.0 + (1e4 - 0.0) * sigmoid(x)]  
     p_links = [lambda y: logit(np.clip((y - 0.0) / (1 - 0.0), eps_, 1 - eps_)),  
-               lambda y: logit(np.clip((y - 0.0) / (5 - 0.0), eps_, 1 - eps_))]
+               lambda y: logit(np.clip((y - 0.0) / (1e4 - 0.0), eps_, 1 - eps_))]
 
     def __init__(self,params):
         self._init_mem()
@@ -70,15 +70,15 @@ class RA():
 
 class Model1():
     name = 'Model 1'
-    bnds = [(0,1),(0,5)] #边界
-    pbnds = [(.1,.5),(.1,2)] #采样边界
+    bnds = [(0,1),(0,1e4)] #边界
+    pbnds = [(.1,.5),(.1,5)] #采样边界
     p_name   = ['alpha', 'beta']  #参数名
     n_params = len(p_name) 
 
     p_trans = [lambda x: 0.0 + (1 - 0.0) * sigmoid(x),   
-               lambda x: 0.0 + (5 - 0.0) * sigmoid(x)]  
+               lambda x: 0.0 + (1e4 - 0.0) * sigmoid(x)]  
     p_links = [lambda y: logit(np.clip((y - 0.0) / (1 - 0.0), eps_, 1 - eps_)),  
-               lambda y: logit(np.clip((y - 0.0) / (5 - 0.0), eps_, 1 - eps_))] 
+               lambda y: logit(np.clip((y - 0.0) / (1e4 - 0.0), eps_, 1 - eps_))] 
     
     def __init__(self,params):
         self._init_mem()
@@ -116,20 +116,20 @@ class Model1():
 
 class Model2():
     name = 'Model 2'
-    bnds = [(0,1), (0,5), (-20,20)]
-    pbnds = [(.1,.5), (.1,2), (-5,5)]
+    bnds = [(0,1), (0,1e4), (-20,20)]
+    pbnds = [(.1,.5), (.1,5), (-5,5)]
     p_name = ['alpha', 'beta', 'kappa_stim']
     n_params = len(p_name)
     
     p_trans = [
         lambda x: 0.0 + (1 - 0.0) * sigmoid(x),
-        lambda x: 0.0 + (5 - 0.0) * sigmoid(x),
+        lambda x: 0.0 + (1e4 - 0.0) * sigmoid(x),
         lambda x: -20.0 + (40 - 0.0) * sigmoid(x)
     ]
     
     p_links = [
         lambda y: logit(np.clip((y - 0.0) / (1 - 0.0), eps_, 1 - eps_)),
-        lambda y: logit(np.clip((y - 0.0) / (5 - 0.0), eps_, 1 - eps_)),
+        lambda y: logit(np.clip((y - 0.0) / (1e4 - 0.0), eps_, 1 - eps_)),
         lambda y: logit(np.clip((y + 20.0) / (40 - 0.0), eps_, 1 - eps_))
     ]
     
@@ -177,21 +177,21 @@ class Model2():
 
 class Model3():
     name = 'Model 3'
-    bnds = [(0,1), (0,1), (0,5)]
-    pbnds = [(.1,.5), (.1,.5), (.1,2)]
+    bnds = [(0,1), (0,1), (0,1e4)]
+    pbnds = [(.1,.5), (.1,.5), (.1,5)]
     p_name = ['alpha_rew', 'alpha_nonrew', 'beta']
     n_params = len(p_name)
     
     p_trans = [
         lambda x: 0.0 + (1 - 0.0) * sigmoid(x),
         lambda x: 0.0 + (1 - 0.0) * sigmoid(x),
-        lambda x: 0.0 + (5 - 0.0) * sigmoid(x),
+        lambda x: 0.0 + (1e4 - 0.0) * sigmoid(x),
     ]
     
     p_links = [
         lambda y: logit(np.clip((y - 0.0) / (1 - 0.0), eps_, 1 - eps_)),
         lambda y: logit(np.clip((y - 0.0) / (1 - 0.0), eps_, 1 - eps_)),
-        lambda y: logit(np.clip((y - 0.0) / (5 - 0.0), eps_, 1 - eps_)),
+        lambda y: logit(np.clip((y - 0.0) / (1e4 - 0.0), eps_, 1 - eps_)),
     ]
     
     def __init__(self, params):
@@ -211,7 +211,8 @@ class Model3():
     
     # ----------- decision ----------- #
     def policy(self):
-        return softmax(self.beta*self.Q)
+        logits = self.beta*self.Q
+        return softmax(logits)
     def eval_act(self, a):
         '''Evaluate the probability of given state and action
         '''
@@ -232,22 +233,22 @@ class Model3():
 
 class Model4():
     name = 'Model 4'
-    bnds = [(0,1), (0,1), (0,5), (-20,20)]
-    pbnds = [(.1,.5), (.1,.5), (.1,2), (-5,5)]
+    bnds = [(0,1), (0,1), (0,1e4), (-20,20)]
+    pbnds = [(.1,.5), (.1,.5), (.1,5), (-5,5)]
     p_name = ['alpha_rew', 'alpha_nonrew', 'beta', 'kappa_stim']
     n_params = len(p_name)
     
     p_trans = [
         lambda x: 0.0 + (1 - 0.0) * sigmoid(x),
         lambda x: 0.0 + (1 - 0.0) * sigmoid(x),
-        lambda x: 0.0 + (5 - 0.0) * sigmoid(x),
+        lambda x: 0.0 + (1e4 - 0.0) * sigmoid(x),
         lambda x: -20.0 + (40 - 0.0) * sigmoid(x)
     ]
     
     p_links = [
         lambda y: logit(np.clip((y - 0.0) / (1 - 0.0), eps_, 1 - eps_)),
         lambda y: logit(np.clip((y - 0.0) / (1 - 0.0), eps_, 1 - eps_)),
-        lambda y: logit(np.clip((y - 0.0) / (5 - 0.0), eps_, 1 - eps_)),
+        lambda y: logit(np.clip((y - 0.0) / (1e4 - 0.0), eps_, 1 - eps_)),
         lambda y: logit(np.clip((y + 20.0) / (40 - 0.0), eps_, 1 - eps_))
     ]
     
@@ -298,22 +299,22 @@ class Model4():
 
 class Model5():
     name = 'Model 5'
-    bnds = [(0,1), (0,1), (0,5), (-20,20)]
-    pbnds = [(.1,.5), (.1,.5), (.1,2), (-5,5)]
+    bnds = [(0,1), (0,1), (0,1e4), (-20,20)]
+    pbnds = [(.1,.5), (.1,.5), (.1,5), (-5,5)]
     p_name = ['alpha_rew', 'alpha_nonrew', 'beta', 'kappa_side']
     n_params = len(p_name)
     
     p_trans = [
         lambda x: 0.0 + (1 - 0.0) * sigmoid(x),
         lambda x: 0.0 + (1 - 0.0) * sigmoid(x),
-        lambda x: 0.0 + (5 - 0.0) * sigmoid(x),
+        lambda x: 0.0 + (1e4 - 0.0) * sigmoid(x),
         lambda x: -20.0 + (40 - 0.0) * sigmoid(x)
     ]
     
     p_links = [
         lambda y: logit(np.clip((y - 0.0) / (1 - 0.0), eps_, 1 - eps_)),
         lambda y: logit(np.clip((y - 0.0) / (1 - 0.0), eps_, 1 - eps_)),
-        lambda y: logit(np.clip((y - 0.0) / (5 - 0.0), eps_, 1 - eps_)),
+        lambda y: logit(np.clip((y - 0.0) / (1e4 - 0.0), eps_, 1 - eps_)),
         lambda y: logit(np.clip((y + 20.0) / (40 - 0.0), eps_, 1 - eps_))
     ]
     
@@ -375,15 +376,15 @@ class Model5():
 
 class Model6():
     name = 'Model 6'
-    bnds = [(0,1), (0,1), (0,5), (-20,20), (-20,20)]
-    pbnds = [(.1,.5), (.1,.5), (.1,2), (-5,5), (-5,5)]
+    bnds = [(0,1), (0,1), (0,1e4), (-20,20), (-20,20)]
+    pbnds = [(.1,.5), (.1,.5), (.1,5), (-5,5), (-5,5)]
     p_name = ['alpha_rew', 'alpha_nonrew', 'beta', 'kappa_stim', 'kappa_side']
     n_params = len(p_name)
     
     p_trans = [
         lambda x: 0.0 + (1 - 0.0) * sigmoid(x),
         lambda x: 0.0 + (1 - 0.0) * sigmoid(x),
-        lambda x: 0.0 + (5 - 0.0) * sigmoid(x),
+        lambda x: 0.0 + (1e4 - 0.0) * sigmoid(x),
         lambda x: -20.0 + (40 - 0.0) * sigmoid(x),
         lambda x: -20.0 + (40 - 0.0) * sigmoid(x)
     ]
@@ -391,7 +392,7 @@ class Model6():
     p_links = [
         lambda y: logit(np.clip((y - 0.0) / (1 - 0.0), eps_, 1 - eps_)),
         lambda y: logit(np.clip((y - 0.0) / (1 - 0.0), eps_, 1 - eps_)),
-        lambda y: logit(np.clip((y - 0.0) / (5 - 0.0), eps_, 1 - eps_)),
+        lambda y: logit(np.clip((y - 0.0) / (1e4 - 0.0), eps_, 1 - eps_)),
         lambda y: logit(np.clip((y + 20.0) / (40 - 0.0), eps_, 1 - eps_)),
         lambda y: logit(np.clip((y + 20.0) / (40 - 0.0), eps_, 1 - eps_))
     ]
@@ -458,17 +459,17 @@ class Model6():
 
 class Model7():
     name = 'Model 7'
-    bnds = [(0,1),(0,5),(0.2)] #边界
-    pbnds = [(.1,.5),(.1,2),(0.5,1.5)] #采样边界
+    bnds = [(0,1),(0,1e4),(0,3)] #边界
+    pbnds = [(.1,.5),(.1,5),(0.5,1.5)] #采样边界
     p_name   = ['alpha', 'beta', 'gamma']  #参数名
     n_params = len(p_name) 
 
     p_trans = [lambda x: 0.0 + (1 - 0.0) * sigmoid(x),   
-               lambda x: 0.0 + (5 - 0.0) * sigmoid(x),
-               lambda x: 0.0 + (2 - 0.0) * sigmoid(x)]  
+               lambda x: 0.0 + (1e4 - 0.0) * sigmoid(x),
+               lambda x: 0.0 + (3 - 0.0) * sigmoid(x)]  
     p_links = [lambda y: logit(np.clip((y - 0.0) / (1 - 0.0), eps_, 1 - eps_)),  
-                lambda y: logit(np.clip((y - 0.0) / (5 - 0.0), eps_, 1 - eps_)),
-                lambda y: logit(np.clip((y - 0.0) / (2 - 0.0), eps_, 1 - eps_))] 
+                lambda y: logit(np.clip((y - 0.0) / (1e4 - 0.0), eps_, 1 - eps_)),
+                lambda y: logit(np.clip((y - 0.0) / (3 - 0.0), eps_, 1 - eps_))] 
     
     def __init__(self,params):
         self._init_mem()
@@ -487,12 +488,13 @@ class Model7():
 
     # ----------- decision ----------- #
     def policy(self):
-        return softmax(self.beta*self.Q)
+        logits = self.beta*self.Q
+        return softmax(logits)
 
     def eval_act(self,a):
         '''Evaluate the probability of given state and action
         '''
-        prob  = softmax(self.beta*self.Q)
+        prob = self.policy()
         return prob[a]
     
         # ----------- learning ----------- #
@@ -501,6 +503,129 @@ class Model7():
                         'a','r')
         
         r = np.sign(r) * (np.abs(r) ** self.gamma)
+        self.RPE = r - self.Q[a]
+        # Q-update
+        self.Q[a] = self.Q[a] + self.alpha*self.RPE
+
+class Model8():
+    name = 'Model 8'
+    bnds = [(0,1),(0,1e4),(0,1)] #边界
+    pbnds = [(.1,.5),(.1,5),(0.3,0.7)] #采样边界
+    p_name   = ['alpha', 'beta', 'omiga']  #参数名
+    n_params = len(p_name) 
+
+    p_trans = [lambda x: 0.0 + (1 - 0.0) * sigmoid(x),   
+               lambda x: 0.0 + (1e4 - 0.0) * sigmoid(x),
+               lambda x: 0.0 + (1 - 0.0) * sigmoid(x)]  
+    p_links = [lambda y: logit(np.clip((y - 0.0) / (1 - 0.0), eps_, 1 - eps_)),  
+                lambda y: logit(np.clip((y - 0.0) / (1e4 - 0.0), eps_, 1 - eps_)),
+                lambda y: logit(np.clip((y - 0.0) / (1 - 0.0), eps_, 1 - eps_))] 
+    
+    def __init__(self,params):
+        self._init_mem()
+        self._init_critic()
+        self._load_params(params)
+
+    def _init_mem(self):
+        self.mem = simpleBuffer()
+    def _load_params(self, params):
+        params = [fn(p) for p, fn in zip(params, self.p_trans)]
+        self.alpha = params[0] # learning rate 
+        self.beta  = params[1]# inverse temperature 
+        self.omiga  = params[2] 
+    def _init_critic(self):
+        self.Q = np.array([0.5, 0.5]) 
+
+    # ----------- decision ----------- #
+    def policy(self):
+        Q = self.Q.copy()
+
+        circle_point, square_point = self.mem.sample(
+            'circle_point','square_point')
+
+        V = np.array([circle_point, square_point])
+
+
+        logits1 = self.beta * Q
+        logits2 = self.beta * V
+        return self.omiga*softmax(logits1) + (1-self.omiga)*softmax(logits2)
+
+    def eval_act(self,a):
+        '''Evaluate the probability of given state and action
+        '''
+        prob = self.policy()
+        return prob[a]
+    
+        # ----------- learning ----------- #
+    def learn(self):
+        a, r = self.mem.sample(
+                        'a','r')
+        
+        self.RPE = r - self.Q[a]
+        # Q-update
+        self.Q[a] = self.Q[a] + self.alpha*self.RPE
+
+
+class Model9():
+    name = 'Model 9'
+    bnds = [(0,1),(0,1e4),(0,1),(-20,20)] #边界
+    pbnds = [(.1,.5),(.1,5),(0.3,0.7),(-5,5)] #采样边界
+    p_name   = ['alpha', 'beta', 'omiga','kappa_stim']  #参数名
+    n_params = len(p_name) 
+
+    p_trans = [lambda x: 0.0 + (1 - 0.0) * sigmoid(x),   
+               lambda x: 0.0 + (1e4 - 0.0) * sigmoid(x),
+               lambda x: 0.0 + (1 - 0.0) * sigmoid(x),
+               lambda x: -20.0 + (40 - 0.0) * sigmoid(x)]  
+    p_links = [lambda y: logit(np.clip((y - 0.0) / (1 - 0.0), eps_, 1 - eps_)),  
+                lambda y: logit(np.clip((y - 0.0) / (1e4 - 0.0), eps_, 1 - eps_)),
+                lambda y: logit(np.clip((y - 0.0) / (1 - 0.0), eps_, 1 - eps_)),
+                lambda y: logit(np.clip((y + 20.0) / (40 - 0.0), eps_, 1 - eps_))] 
+    
+    def __init__(self,params):
+        self._init_mem()
+        self._init_critic()
+        self._load_params(params)
+
+    def _init_mem(self):
+        self.mem = simpleBuffer()
+    def _load_params(self, params):
+        params = [fn(p) for p, fn in zip(params, self.p_trans)]
+        self.alpha = params[0] # learning rate 
+        self.beta  = params[1]# inverse temperature 
+        self.omiga  = params[2]
+        self.kappa_stim = params[3]
+    def _init_critic(self):
+        self.Q = np.array([0.5, 0.5]) 
+
+    # ----------- decision ----------- #
+    def policy(self):
+        Q_sum = self.Q.copy()
+
+        prev_shape, circle_point, square_point = self.mem.sample(
+            'prev_shape','circle_point','square_point')
+        
+        # stimulus stickiness (previously chosen stimulus)
+        if prev_shape is not None and not np.isnan(prev_shape):
+            Q_sum[int(prev_shape)] += self.kappa_stim
+
+        V_sum = np.array([circle_point, square_point])
+
+        logits1 = self.beta * Q_sum
+        logits2 = self.beta * V_sum
+        return self.omiga*softmax(logits1) + (1-self.omiga)*softmax(logits2)
+
+    def eval_act(self,a):
+        '''Evaluate the probability of given state and action
+        '''
+        prob = self.policy()
+        return prob[a]
+    
+        # ----------- learning ----------- #
+    def learn(self):
+        a, r = self.mem.sample(
+                        'a','r')
+        
         self.RPE = r - self.Q[a]
         # Q-update
         self.Q[a] = self.Q[a] + self.alpha*self.RPE

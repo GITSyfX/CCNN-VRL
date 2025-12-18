@@ -91,6 +91,9 @@ def fl(pool,agent,datalist,n_fits):
     all_results = {}; 
     i = 1
     for dataname in datalist.keys():
+        # if i < 14:
+        #     i += 1
+        #     continue
         data = datalist[dataname]
         print(f'Fitting {agent.name} subj {dataname}, progress: {(i*100)/len(datalist):.2f}%')
         opt_res = fp(pool, agent, data, n_fits, method='mle', 
@@ -99,7 +102,7 @@ def fl(pool,agent,datalist,n_fits):
         all_results[dataname] = opt_res
         i += 1
         sub_end = datetime.datetime.now()
-        print(f'\tLOSS:{-opt_res["log_post"]:.4f}, using {(sub_end - sub_start).total_seconds():.2f} seconds')
+        print(f'\tLOSS:{-opt_res["log_post"]:.4f}, using {(sub_end - sub_start).total_seconds():.2f} seconds, BIC:{opt_res["bic"]}:')
         sub_start = sub_end
     end_time = datetime.datetime.now()
     print('\nparallel computing spend {:.2f} seconds'.format(
@@ -120,19 +123,27 @@ def nll(params, agent, data):
         #data = data.iloc[-90:]
         for _, row in data.iterrows():
             # see state 
+            circle_point = row['circle_point']
+            square_point = row['square_point']
             prev_shape = row['prev_shape']
             prev_side = row['prev_side']
             circle_side = row['circle_side']
             
             # the next state, rew, and done 
-            a = row['choice']
-            if not np.isnan(a):
-                a = int(a)
+            a_raw = row['chosed_shape']
+
+            if a_raw == 'circle':
+                a = 0
+            elif a_raw == 'square':
+                a = 1
             else:
-                continue
+                continue   
+
             r = row['reward']
             #save the info 
             subj.mem.push({
+                'circle_point': circle_point,
+                'square_point': square_point,
                 'prev_shape': prev_shape, 
                 'prev_side': prev_side,
                 'circle_side': circle_side, 
@@ -140,16 +151,6 @@ def nll(params, agent, data):
                 'r': r,
             })
             po1 = subj.eval_act(a)+1e-16
-
-                    # ===== 2. 异常检测 =====
-
-            if (po1 <= 0) or (po1 > 1) or np.isnan(po1):
-                print(f"[BAD PROB], p={po1}, a={a}")
-            
-            if po1 < 1e-4:  # 极端惩罚来源
-                print(f"[LOW P], p={po1:.2e}, a={a}")
-
-
             nLL -= np.log(po1)
             subj.learn()
         return nLL 
